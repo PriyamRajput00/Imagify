@@ -2,9 +2,77 @@ import React, { useContext } from "react";
 import { assets, plans } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
 import { motion } from "framer-motion";
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import  axios  from 'axios';
 
 const BuyCredit = () => {
-  const { user } = useContext(AppContext);
+  const { user, backendUrl, loadCreditData, token, setShowLogin } = useContext(AppContext);
+
+  const navigate = useNavigate()
+
+  const initPay = async (order) =>{
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: 'Credits Payments',
+      description : 'Credits Payment',
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async(response) => {
+        try {
+          if (!response.razorpay_order_id) {
+            throw new Error('Order ID missing from response');
+          }
+          
+          const {data} = await axios.post(backendUrl + '/api/user/verify-razor', 
+            {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id
+            },
+            {headers: {token}}
+          )
+          
+          if(data.success){
+            toast.success('Payment successful! Credits added.')
+            loadCreditData()
+            navigate('/')
+          } else {
+            toast.error(data.message || 'Payment verification failed')
+          }
+        } catch (error) {
+          console.error('Verification Error:', error);
+          toast.error(error.response?.data?.message || error.message || 'Payment verification failed')
+        }
+      },
+      modal: {
+        ondismiss: function(){
+          toast.info('Payment cancelled')
+        }
+      }
+    }
+    const rzp = new window.Razorpay(options)
+    rzp.open()
+  }
+
+  const paymentRazorPay = async (planId) =>{
+    try {
+      if(!user){
+        setShowLogin(true)
+        return;
+      }
+    
+     const {data}  =  await axios.post(backendUrl + '/api/user/pay-razor', {planId}, {headers : {token}})
+
+     if(data.success){
+      initPay(data.order)
+     }
+    } catch (error) {
+      console.error('Backend Error:', error.response?.data);
+      toast.error(error.response?.data?.message || error.message)
+    }
+  }
   return (
     <motion.div
       initial={{ opacity: 0.2, y: 100 }}
@@ -33,7 +101,7 @@ const BuyCredit = () => {
               <span className="text-3xl font-medium">${plan.price}</span>/
               {plan.credits} credits{" "}
             </p>
-            <button className="w-full bg-gray-800 text-white mt-8 text-sm rounded-md py-2.5 min-w-52">
+            <button onClick={ ()=>paymentRazorPay(plan.id) } className="w-full bg-gray-800 text-white mt-8 text-sm rounded-md py-2.5 min-w-52">
               {user ? "Purchase" : "Get Started"}{" "}
             </button>
           </div>

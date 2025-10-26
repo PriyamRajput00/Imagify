@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { motion } from "framer-motion";
+import { AppContext } from "../context/AppContext";
 
 const Result = () => {
   const [image, setImage] = useState(assets.sample_img_1);
@@ -8,7 +9,29 @@ const Result = () => {
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
 
-  const onSubmitHandler = async (e) => {};
+  const {generateImage} = useContext(AppContext);
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    
+    if (!input.trim()) {
+      return;
+    }
+    
+    setLoading(true);
+
+    try {
+      const resultImage = await generateImage(input);
+      if(resultImage){
+        setIsImageLoaded(true);
+        setImage(resultImage);
+      }
+    } catch (error) {
+      console.error('Error generating image:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <motion.form
@@ -37,8 +60,11 @@ const Result = () => {
             onChange={(e) => setInput(e.target.value)}
             value={input}
             type="text"
+            name="prompt"
+            id="prompt-input"
             placeholder="Describe what you want to generate"
             className="flex-1 bg-transparent outline-none ml-8 max-sm:w-20 placeholder-color"
+            autoComplete="off"
           />
           <button
             type="submit"
