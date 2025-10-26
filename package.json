@@ -4,7 +4,7 @@
   "description": "AI Image Generator - Frontend + Backend",
   "type": "module",
   "scripts": {
-    "build": "npm install && cd server && npm install && cd ../client && npm install && npm run build",
+    "build": "npm install && cd server && npm install && cd ../client && npm install && npx vite build",
     "start": "cd server && npm start",
     "install:all": "cd server && npm install && cd ../client && npm install"
   }

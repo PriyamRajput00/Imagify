@@ -3,7 +3,7 @@ services:
     name: imagify
     runtime: node
     plan: starter
-    buildCommand: npm install && cd server && npm install && cd ../client && npm install && npm run build
+    buildCommand: npm install && cd server && npm install && cd ../client && npm install && npx vite build
     startCommand: cd server && npm start
     envVars:
       - key: NODE_ENV
