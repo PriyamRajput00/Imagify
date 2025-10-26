@@ -1,12 +1,13 @@
-# IMAGIFY - Deployment Guide
+# IMAGIFY - Deployment Guide (Single Service)
 
-## 🚀 Deploy to Render
+## 🚀 Deploy to Render (Frontend + Backend Together)
 
 ### Prerequisites
 1. MongoDB Atlas account (free tier available)
 2. Razorpay account
 3. Clipdrop API key
 4. Render account (free tier available)
+5. GitHub account
 
 ---
 
@@ -17,7 +18,7 @@
 3. Go to "Network Access" → Add IP Address → Allow access from anywhere (0.0.0.0/0)
 4. Go to "Database Access" → Create database user
 5. Copy connection string (replace `<password>` with actual password)
-6. Save this MongoDB URI for later
+6. Example: `mongodb+srv://username:password@cluster.mongodb.net/imagify?retryWrites=true&w=majority`
 
 ---
 
@@ -26,8 +27,9 @@
 ### Razorpay
 1. Sign up at [Razorpay](https://razorpay.com)
 2. Go to Dashboard → API Keys
-3. Get your `Key ID` and `Key Secret`
-4. Save for environment variables
+3. Copy `Key ID` (starts with `rzp_`)
+4. Copy `Key Secret`
+5. Save both for environment variables
 
 ### Clipdrop
 1. Go to [Clipdrop](https://clipdrop.co)
@@ -37,169 +39,193 @@
 
 ---
 
-## Step 3: Deploy Backend to Render
+## Step 3: Push to GitHub
 
-1. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "Ready for deployment"
-   git push origin main
-   ```
+```bash
+# Navigate to project
+cd /Users/priyamrajput/Desktop/IMAGIFY
 
-2. **Go to Render Dashboard**
+# Add all files
+git add .
+
+# Commit changes
+git commit -m "Ready for deployment"
+
+# Push to GitHub
+git push origin main
+```
+
+---
+
+## Step 4: Deploy to Render
+
+### Create Single Web Service
+
+1. **Go to Render Dashboard**
    - Visit [render.com](https://render.com)
-   - Sign up/Login
+   - Sign up/Login with GitHub
 
-3. **Create New Web Service**
+2. **Create New Web Service**
    - Click "New +" → "Web Service"
    - Connect your GitHub repository
-   - Configure:
-     - **Name**: `imagify-backend`
-     - **Runtime**: Node
-     - **Build Command**: `cd server && npm install`
-     - **Start Command**: `cd server && npm start`
-     - **Plan**: Free
+   - Select your repository
 
-4. **Add Environment Variables**
+3. **Configure Service**
    ```
-   NODE_ENV=production
-   PORT=8000
-   MONGODB_URI=<your-mongodb-uri>
-   JWT_SECRET=<generate-a-random-secret>
-   RAZORPAY_KEY_ID=<your-razorpay-key>
-   RAZORPAY_KEY_SECRET=<your-razorpay-secret>
-   CLIPDROP_API=<your-clipdrop-key>
-   CURRENCY=USD
-   FRONTEND_URL=https://imagify-frontend.onrender.com
+   Name: imagify
+   Region: Choose closest to you
+   Branch: main
+   Root Directory: (leave empty)
+   Runtime: Node
+   Build Command: npm run build
+   Start Command: npm start
+   Plan: Free
    ```
 
-5. **Save & Deploy**
+4. **Add Environment Variables** (Click "Advanced")
+   Add these variables:
+   ```
+   NODE_ENV = production
+   PORT = 8000
+   MONGODB_URI = mongodb+srv://username:password@cluster.mongodb.net/imagify?retryWrites=true&w=majority
+   JWT_SECRET = <generate-random-string-32-chars>
+   RAZORPAY_KEY_ID = rzp_live_xxxxx
+   RAZORPAY_KEY_SECRET = xxxxx
+   CLIPDROP_API = xxxxx
+   CURRENCY = USD
+   ```
+
+5. **Create Web Service**
    - Click "Create Web Service"
-   - Wait for deployment
-   - Copy your backend URL (e.g., `https://imagify-backend.onrender.com`)
+   - Wait for build to complete (5-10 minutes)
+   - Build logs will show progress
+
+6. **Get Your URL**
+   - Once deployed, copy the URL (e.g., `https://imagify.onrender.com`)
+   - Your app is live! 🎉
 
 ---
 
-## Step 4: Deploy Frontend to Render
+## Step 5: Test Your Deployment
 
-1. **Create New Web Service** (different from backend)
-   - Click "New +" → "Web Service"
-   - Connect same GitHub repository
-   - Configure:
-     - **Name**: `imagify-frontend`
-     - **Runtime**: Node
-     - **Build Command**: `cd client && npm install && npm run build`
-     - **Start Command**: `cd client && npm run preview`
-     - **Plan**: Free
-
-2. **Add Environment Variables**
-   ```
-   VITE_BACKEND_URL=https://imagify-backend.onrender.com
-   VITE_RAZORPAY_KEY_ID=<your-razorpay-key-id>
-   ```
-
-3. **Save & Deploy**
-   - Click "Create Web Service"
-   - Wait for deployment
-   - Copy your frontend URL
-
----
-
-## Step 5: Update CORS Settings
-
-1. Go to backend service on Render
-2. Go to "Environment"
-3. Update `FRONTEND_URL` with your actual frontend URL
-4. Re-deploy
-
----
-
-## Step 6: Test Your Deployment
-
-### Backend
-Visit: `https://your-backend.onrender.com`
-Should see: `{"message":"IMAGIFY API is working 🚀","status":"online",...}`
+### Backend API
+Visit: `https://your-app.onrender.com/api`
+Should see API routes working
 
 ### Frontend
-Visit: `https://your-frontend.onrender.com`
-Should see: Your application homepage
+Visit: `https://your-app.onrender.com`
+Should see your app homepage
+
+### Test Features
+- [ ] Register new account
+- [ ] Login
+- [ ] View credits
+- [ ] Buy credits (test mode)
+- [ ] Generate image
 
 ---
 
 ## 🔧 Troubleshooting
 
-### Backend Issues
+### Build Failed
+**Error**: "Build command failed"
+- **Solution**: Check build logs in Render dashboard
+- **Check**: All dependencies are in package.json
+- **Check**: Node version is compatible
 
-**Problem**: "MongoDB connection error"
-- **Solution**: Check MongoDB URI in environment variables
+### MongoDB Connection Error
+**Error**: "Cannot connect to MongoDB"
+- **Solution**: Check MONGODB_URI in environment variables
 - **Check**: Network Access allows all IPs (0.0.0.0/0)
+- **Check**: Username/password are correct
 
-**Problem**: "Invalid API key"
-- **Solution**: Verify all API keys are correct
-- **Check**: No extra spaces in environment variables
+### CORS Error
+**Error**: "CORS policy blocked"
+- **Solution**: App serves frontend and backend together, CORS should work automatically
+- **Check**: All routes start with `/api`
 
-**Problem**: "CORS error"
-- **Solution**: Update `FRONTEND_URL` in backend environment variables
-- **Check**: Frontend URL matches exactly (no trailing slash)
-
-### Frontend Issues
-
-**Problem**: "Connection failed"
-- **Solution**: Update `VITE_BACKEND_URL` in frontend environment variables
-- **Check**: Backend is deployed and running
-
-**Problem**: "Blank page"
-- **Solution**: Check browser console for errors
-- **Check**: All environment variables are set
+### API Not Working
+**Error**: "Cannot fetch from API"
+- **Solution**: Check environment variables are set
+- **Check**: Server logs for specific errors
+- **Check**: API routes are correct (`/api/user`, `/api/image`)
 
 ---
 
-## 📝 Environment Variables Checklist
+## 📝 Environment Variables Reference
 
-### Backend (.env)
-```
-✓ NODE_ENV=production
-✓ PORT=8000
-✓ MONGODB_URI=mongodb+srv://...
-✓ JWT_SECRET=<random-string>
-✓ RAZORPAY_KEY_ID=rzp_...
-✓ RAZORPAY_KEY_SECRET=...
-✓ CLIPDROP_API=...
-✓ CURRENCY=USD
-✓ FRONTEND_URL=https://imagify-frontend.onrender.com
-```
+All variables needed in Render:
 
-### Frontend (.env)
 ```
-✓ VITE_BACKEND_URL=https://imagify-backend.onrender.com
-✓ VITE_RAZORPAY_KEY_ID=rzp_...
+✓ NODE_ENV = production
+✓ PORT = 8000
+✓ MONGODB_URI = mongodb+srv://...
+✓ JWT_SECRET = <32+ random characters>
+✓ RAZORPAY_KEY_ID = rzp_live_...
+✓ RAZORPAY_KEY_SECRET = ...
+✓ CLIPDROP_API = ...
+✓ CURRENCY = USD
 ```
 
 ---
 
-## 🎉 Success!
+## 🎉 Success Checklist
 
-Your app is now live at:
-- **Frontend**: https://your-frontend.onrender.com
-- **Backend**: https://your-backend.onrender.com
+- [ ] Code pushed to GitHub
+- [ ] Render service created
+- [ ] Environment variables added
+- [ ] Build completed successfully
+- [ ] Frontend loads at URL
+- [ ] Can register new user
+- [ ] Can login
+- [ ] Can generate images
+- [ ] Payment integration works
+
+---
+
+## 🔄 Auto-Deploy
+
+Render automatically redeploys when you push to GitHub:
+```bash
+git add .
+git commit -m "Update feature"
+git push origin main
+```
 
 ---
 
 ## 💡 Pro Tips
 
-1. **Auto-deploy**: Render auto-deploys on git push
-2. **Logs**: Check build logs in Render dashboard
-3. **Monitoring**: Use Render's built-in monitoring
-4. **SSL**: Automatic HTTPS on Render
-5. **Sleep mode**: Free plan spins down after inactivity
+1. **Free Tier Limits**: 
+   - Spins down after 15 min inactivity
+   - First request after sleep takes 30-60 seconds
+
+2. **Environment Variables**: 
+   - Never commit .env files
+   - Use Render's environment settings
+
+3. **Logs**: 
+   - Check "Logs" tab for debugging
+   - Real-time log streaming available
+
+4. **Monitoring**: 
+   - Render provides free monitoring
+   - Check "Metrics" for performance
 
 ---
 
-## 🔐 Security Notes
+## 📞 Support
 
-1. Never commit `.env` files
-2. Use strong JWT secrets
-3. Keep API keys secure
-4. Regularly rotate secrets
-5. Use environment variables only
+If you encounter issues:
+1. Check Render build logs
+2. Check Render service logs
+3. Test API endpoints with curl/Postman
+4. Verify all environment variables
 
+---
+
+## 🚀 Your App is Live!
+
+Visit: `https://your-app.onrender.com`
+
+Enjoy your AI Image Generator! 🎨

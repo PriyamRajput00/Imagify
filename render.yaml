@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: imagify-backend
+    name: imagify
     runtime: node
     plan: starter
-    buildCommand: cd server && npm install
-    startCommand: cd server && npm start
+    buildCommand: npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -22,18 +22,4 @@ services:
         sync: false
       - key: CURRENCY
         value: USD
-      - key: CLIPDROP_MODEL
-        value: 
-
-  - type: web
-    name: imagify-frontend
-    runtime: node
-    plan: starter
-    buildCommand: cd client && npm install && npm run build
-    startCommand: cd client && npm run preview
-    envVars:
-      - key: VITE_BACKEND_URL
-        sync: false
-      - key: VITE_RAZORPAY_KEY_ID
-        sync: false
 

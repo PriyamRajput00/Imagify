@@ -2,8 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import userRouter from './routes/userRoutes.js';
 import imageRouter from './routes/imageRoutes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -14,15 +19,20 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:5173',
   process.env.FRONTEND_URL,
-  'https://imagify-frontend.onrender.com',
-  'https://imagify.onrender.com'
+  'https://imagify.onrender.com',
+  'https://imagify-frontend.onrender.com'
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, etc)
+      // Allow requests with no origin (mobile apps, curl, etc) or same origin
       if (!origin) return callback(null, true);
+      
+      // In production, if serving from same origin, allow it
+      if (process.env.NODE_ENV === 'production') {
+        return callback(null, true);
+      }
       
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
         callback(null, true);
@@ -50,13 +60,25 @@ mongoose.connection.on('error', (err) => {
 app.use('/api/user', userRouter);
 app.use('/api/image', imageRouter);
 
-app.get('/', (req, res) => {
-  res.json({ 
-    message: "IMAGIFY API is working 🚀",
-    status: "online",
-    timestamp: new Date().toISOString()
+// Serve static files from React app (production)
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+  
+  // Serve React app for all non-API routes
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
-});
+} else {
+  // Development - just show API status
+  app.get('/', (req, res) => {
+    res.json({ 
+      message: "IMAGIFY API is working 🚀",
+      status: "online",
+      timestamp: new Date().toISOString()
+    });
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);

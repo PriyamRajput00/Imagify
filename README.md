@@ -1,146 +1,234 @@
 # 🎨 IMAGIFY - AI Image Generator
 
-A professional AI-powered image generation platform built with React, Express, and powered by Clipdrop API.
+Professional AI-powered image generation platform built with React + Express.
 
 ## ✨ Features
 
-- 🤖 AI Image Generation using advanced prompts
-- 💳 Secure Payment Integration (Razorpay)
-- 💰 Flexible Credit System
-- 🔐 JWT Authentication
-- 📱 Responsive Design
-- ⚡ Fast & Optimized
-- 🎨 Professional Quality Images
+- 🤖 **AI Image Generation** using Clipdrop API with advanced prompts
+- 💳 **Secure Payment** via Razorpay integration
+- 💰 **Credit System** with flexible pricing plans
+- 🔐 **JWT Authentication** for secure access
+- 📱 **Responsive Design** - works on all devices
+- ⚡ **Optimized** for performance and speed
+- 🎨 **Professional Quality** images with AI
 
-## 🚀 Quick Start
+---
 
-### Prerequisites
-- Node.js 18+
+## 🚀 Quick Deploy (5 Minutes)
+
+### 1. Get API Keys
 - MongoDB Atlas account
-- API Keys (Razorpay, Clipdrop)
+- Razorpay account  
+- Clipdrop API key
 
-### Installation
+### 2. Push to GitHub
+```bash
+git push origin main
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd IMAGIFY
-   ```
+### 3. Deploy on Render
+1. Go to [render.com](https://render.com)
+2. Create "Web Service"
+3. Connect GitHub repo
+4. Add environment variables
+5. Deploy!
 
-2. **Setup Backend**
-   ```bash
-   cd server
-   npm install
-   cp .env.example .env
-   # Edit .env with your credentials
-   npm run dev
-   ```
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for details**
 
-3. **Setup Frontend**
-   ```bash
-   cd client
-   npm install
-   cp .env.example .env
-   # Edit .env with your API URLs
-   npm run dev
-   ```
+---
 
-4. **Access the app**
-   - Frontend: http://localhost:5173
-   - Backend: http://localhost:8000
+## 📦 Local Development
 
-## 📦 Tech Stack
+### Install Dependencies
+```bash
+# Install all dependencies
+npm install
+
+# Install server dependencies
+cd server && npm install
+
+# Install client dependencies
+cd ../client && npm install
+```
+
+### Run Development Server
+```bash
+# Run both frontend and backend
+npm run dev
+
+# Or run separately:
+# Backend: cd server && npm run dev
+# Frontend: cd client && npm run dev
+```
+
+### Environment Setup
+Copy `.env.example` files and add your keys:
+- `server/.env.example` → `server/.env`
+- `client/.env.example` → `client/.env`
+
+---
+
+## 🏗️ Project Structure
+
+```
+IMAGIFY/
+├── client/           # React frontend
+│   ├── src/
+│   │   ├── pages/   # Pages (Home, BuyCredit, Result)
+│   │   ├── components/
+│   │   └── context/
+│   └── dist/        # Build output
+│
+├── server/           # Express backend
+│   ├── controllers/ # Business logic
+│   ├── routes/      # API routes
+│   ├── models/      # Database models
+│   └── middlewares/ # Auth middleware
+│
+├── render.yaml       # Render deployment config
+└── package.json     # Root scripts
+```
+
+---
+
+## 📝 API Endpoints
+
+### Authentication
+- `POST /api/user/register` - Register user
+- `POST /api/user/login` - Login user
+
+### User
+- `GET /api/user/credits` - Get credits
+- `POST /api/user/pay-razor` - Create order
+- `POST /api/user/verify-razor` - Verify payment
+
+### Image Generation
+- `POST /api/image/generate-image` - Generate AI image
+
+---
+
+## 💳 Credit Plans
+
+| Plan      | Price  | Credits |
+|-----------|--------|---------|
+| Basic     | $10    | 100     |
+| Advanced  | $50    | 500     |
+| Business  | $250   | 5000    |
+
+**1 credit = 1 AI-generated image**
+
+---
+
+## 🔧 Tech Stack
 
 ### Frontend
 - React 19
-- React Router
+- React Router 7
 - Framer Motion
 - Tailwind CSS
-- Axios
 - React Toastify
 
 ### Backend
 - Node.js
 - Express 5
 - MongoDB
-- JWT Authentication
-- Razorpay Integration
+- JWT
+- Razorpay
 - Clipdrop API
 
-## 🌐 Deployment
+---
 
-### Deploy to Render
+## 📄 Scripts
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+```bash
+# Root level
+npm run dev          # Run both frontend and backend
+npm run build        # Build for production
+npm start            # Start production server
 
-**Quick Steps:**
-1. Push to GitHub
-2. Create services on Render
-3. Configure environment variables
-4. Deploy!
+# Server
+cd server && npm run dev      # Development
+cd server && npm start         # Production
 
-### Environment Variables
+# Client  
+cd client && npm run dev       # Development
+cd client && npm run build     # Build
+```
 
-**Backend** (`server/.env`):
+---
+
+## 🔐 Environment Variables
+
+### Server (.env)
 ```env
 PORT=8000
 MONGODB_URI=mongodb+srv://...
-JWT_SECRET=your-secret
+JWT_SECRET=<random-string>
 RAZORPAY_KEY_ID=rzp_...
 RAZORPAY_KEY_SECRET=...
 CLIPDROP_API=...
 CURRENCY=USD
-FRONTEND_URL=https://your-app.onrender.com
+NODE_ENV=production
 ```
 
-**Frontend** (`client/.env`):
+### Client (.env)
 ```env
-VITE_BACKEND_URL=https://your-backend.onrender.com
+VITE_BACKEND_URL=http://localhost:8000
 VITE_RAZORPAY_KEY_ID=rzp_...
 ```
 
-## 📝 API Endpoints
+---
 
-### User
-- `POST /api/user/register` - Register new user
-- `POST /api/user/login` - Login user
-- `GET /api/user/credits` - Get user credits
-- `POST /api/user/pay-razor` - Create payment order
-- `POST /api/user/verify-razor` - Verify payment
+## 🚀 Deploy in 3 Steps
 
-### Image
-- `POST /api/image/generate-image` - Generate AI image
+1. **Get API keys** (MongoDB, Razorpay, Clipdrop)
+2. **Push to GitHub**
+3. **Deploy on Render** (see [DEPLOYMENT.md](./DEPLOYMENT.md))
 
-## 💳 Credits System
+---
 
-- **Basic Plan**: $10 - 100 credits
-- **Advanced Plan**: $50 - 500 credits
-- **Business Plan**: $250 - 5000 credits
+## 🔄 Auto-Deploy
 
-1 credit = 1 AI-generated image
+Render automatically redeploys when you push to GitHub:
+```bash
+git push origin main
+```
 
-## 🔐 Security
+---
 
-- JWT-based authentication
-- Bcrypt password hashing
-- CORS protection
-- Secure payment processing
-- Input validation
-- Error handling
+## 📊 Monitoring
+
+- Build logs: Check Render dashboard
+- Server logs: Check service logs
+- Metrics: Monitor performance
+
+---
+
+## 💡 Features
+
+- **Smart Prompt Enhancement** - Automatically improves prompts for better quality
+- **Professional Error Handling** - User-friendly error messages
+- **Secure Payments** - Razorpay integration
+- **JWT Authentication** - Secure user sessions
+- **Responsive UI** - Works on all devices
+
+---
+
+## 📞 Support
+
+For issues:
+1. Check [DEPLOYMENT.md](./DEPLOYMENT.md)
+2. Review [DEPLOY_CHECKLIST.md](./DEPLOY_CHECKLIST.md)
+3. Check logs in Render dashboard
+
+---
 
 ## 📄 License
 
 ISC
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📧 Support
-
-For issues and questions, please open an issue on GitHub.
-
 ---
 
-Made with ❤️ using React + Express
+## 🎉 Made with ❤️
 
+Built with React + Express + MongoDB

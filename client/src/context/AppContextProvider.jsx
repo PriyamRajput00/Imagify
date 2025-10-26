@@ -10,7 +10,8 @@ export const AppContextProvider = ({ children }) => {
   const [ token, setToken] = useState(localStorage.getItem('token'))
 
   const [ credit, setCredit] = useState(false)
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
+  // In production (same origin), use relative paths. In dev, use env variable
+  const backendUrl = import.meta.env.PROD ? '' : import.meta.env.VITE_BACKEND_URL
 
   const navigate = useNavigate();
 
