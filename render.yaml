@@ -3,8 +3,8 @@ services:
     name: imagify
     runtime: node
     plan: starter
-    buildCommand: npm run build
-    startCommand: npm start
+    buildCommand: npm install && cd server && npm install && cd ../client && npm install && npm run build
+    startCommand: cd server && npm start
     envVars:
       - key: NODE_ENV
         value: production

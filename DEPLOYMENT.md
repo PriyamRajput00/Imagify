@@ -77,8 +77,8 @@ git push origin main
    Branch: main
    Root Directory: (leave empty)
    Runtime: Node
-   Build Command: npm run build
-   Start Command: npm start
+   Build Command: npm install && cd server && npm install && cd ../client && npm install && npm run build
+   Start Command: cd server && npm start
    Plan: Free
    ```
 

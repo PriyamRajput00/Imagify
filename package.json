@@ -4,16 +4,9 @@
   "description": "AI Image Generator - Frontend + Backend",
   "type": "module",
   "scripts": {
-    "dev": "npm run dev:server & npm run dev:client",
-    "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev",
-    "build": "npm run build:client",
-    "build:client": "cd client && npm install && npm run build",
+    "build": "npm install && cd server && npm install && cd ../client && npm install && npm run build",
     "start": "cd server && npm start",
-    "install:all": "npm install && cd server && npm install && cd ../client && npm install"
-  },
-  "devDependencies": {
-    "concurrently": "^7.6.0"
+    "install:all": "cd server && npm install && cd ../client && npm install"
   }
 }
 
