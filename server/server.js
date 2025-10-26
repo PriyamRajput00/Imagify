@@ -65,8 +65,8 @@ if (process.env.NODE_ENV === 'production') {
   // Serve static files
   app.use(express.static(path.join(__dirname, '../client/dist')));
   
-  // Serve React app for all non-API routes
-  app.get('*', (req, res) => {
+  // Serve React app for all non-API routes (any remaining routes)
+  app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 } else {
